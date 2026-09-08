@@ -17,7 +17,7 @@ class TeacherMode {
       teacherName: "RM.Zulkifli",
       adminUser: "admin",
       adminPin: "l4zu4rd1",
-      googleSheetUrl: "" // Webhook Google Apps Script untuk pengumpulan nilai otomatis
+      googleSheetUrl: "https://script.google.com/macros/s/AKfycbwAzS9EzIMhBqn1WvSuoe6e2t6Q_QdjOELHCT-7_3KdEUGtcvjSkNB4E2YgW4QsWvaR/exec"
     };
     this.loadConfig();
   }
@@ -35,6 +35,9 @@ class TeacherMode {
         }
         if (!this.config.teacherPhone) {
           this.config.teacherPhone = "6285208194646";
+        }
+        if (!this.config.googleSheetUrl) {
+          this.config.googleSheetUrl = "https://script.google.com/macros/s/AKfycbwAzS9EzIMhBqn1WvSuoe6e2t6Q_QdjOELHCT-7_3KdEUGtcvjSkNB4E2YgW4QsWvaR/exec";
         }
       }
     } catch (e) {

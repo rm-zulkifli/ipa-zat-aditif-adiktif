@@ -1118,7 +1118,7 @@ class App {
 
   // --- GOOGLE SHEETS AUTOMATIC SUBMISSION ---
   async sendResultToGoogleSheets(reportItem) {
-    let targetUrl = "";
+    let targetUrl = "https://script.google.com/macros/s/AKfycbwAzS9EzIMhBqn1WvSuoe6e2t6Q_QdjOELHCT-7_3KdEUGtcvjSkNB4E2YgW4QsWvaR/exec";
     if (window.teacherMode && window.teacherMode.config && window.teacherMode.config.googleSheetUrl) {
       targetUrl = window.teacherMode.config.googleSheetUrl.trim();
     } else {
