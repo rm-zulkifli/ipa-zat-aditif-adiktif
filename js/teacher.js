@@ -137,7 +137,7 @@ class TeacherMode {
   renderDashboard(container) {
     const studentData = (window.app && window.app.userData) ? window.app.userData : {
       name: "Siswa SMP",
-      classRoom: "IX-A",
+      classRoom: "",
       xp: 0,
       quizHistory: []
     };
@@ -177,7 +177,7 @@ class TeacherMode {
             <span class="ts-icon">👥</span>
             <div class="ts-info">
               <span class="ts-label">Siswa Terakhir</span>
-              <strong class="ts-val">${studentData.name} (${studentData.classRoom || 'Kelas IX'})</strong>
+              <strong class="ts-val">${studentData.name}${studentData.classRoom ? ` (${studentData.classRoom})` : ''}</strong>
             </div>
           </div>
           <div class="tstat-card">

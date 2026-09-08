@@ -10,7 +10,7 @@ class App {
     this.userData = {
       role: "siswa", // 'siswa' | 'guru'
       name: "Siswa SMP",
-      classRoom: "IX-A",
+      classRoom: "",
       absen: "",
       isLoggedIn: false,
       school: "SMP/MTs Fase D",
@@ -59,6 +59,10 @@ class App {
       const saved = localStorage.getItem("mpi_ipa9_user");
       if (saved) {
         this.userData = { ...this.userData, ...JSON.parse(saved) };
+        // Bersihkan default lama "IX-A" jika belum diisi manual oleh siswa
+        if (this.userData.classRoom === "IX-A" && (!this.userData.isLoggedIn || this.userData.name === "Siswa SMP")) {
+          this.userData.classRoom = "";
+        }
       }
     } catch (e) {
       console.warn("Storage load error:", e);
@@ -74,7 +78,7 @@ class App {
   }
 
   isUserLoggedIn() {
-    return (this.userData.role === "guru" || (this.userData.isLoggedIn === true && this.userData.name && this.userData.name !== "Siswa SMP"));
+    return (this.userData.role === "guru" || Boolean(this.userData.isLoggedIn));
   }
 
   init() {
@@ -221,7 +225,7 @@ class App {
     }
 
     if (!classRoom) {
-      alert("Silakan masukkan Kelasmu (misal: IX-A atau 9B) terlebih dahulu!");
+      alert("Silakan masukkan Kelasmu (misal: 9A atau 9B) terlebih dahulu!");
       if (classInput) classInput.focus();
       return;
     }
@@ -300,7 +304,7 @@ class App {
 
     this.userData.role = "siswa";
     this.userData.name = "Siswa SMP";
-    this.userData.classRoom = "IX-A";
+    this.userData.classRoom = "";
     this.userData.absen = "";
     this.userData.isLoggedIn = false;
 
@@ -399,8 +403,11 @@ class App {
     if (studentNameEl) {
       if (this.userData.role === "guru") {
         studentNameEl.innerText = `${this.userData.name} (Admin Guru)`;
+      } else if (!this.isUserLoggedIn()) {
+        studentNameEl.innerText = "Siswa Berprestasi";
       } else {
-        studentNameEl.innerText = `${this.userData.name} (${this.userData.classRoom || 'Kelas IX'})`;
+        const classText = this.userData.classRoom ? ` (${this.userData.classRoom})` : "";
+        studentNameEl.innerText = `${this.userData.name}${classText}`;
       }
     }
   }
@@ -450,15 +457,17 @@ class App {
       }
     }
 
+    const loggedIn = this.isUserLoggedIn();
     const nameEls = document.querySelectorAll(".user-name-display");
     nameEls.forEach(el => {
       if (isGuru) {
         el.innerText = `${this.userData.name}`;
       } else {
-        if (!this.userData.isLoggedIn) {
+        if (!loggedIn) {
           el.innerText = "Masuk Siswa";
         } else {
-          el.innerText = `${this.userData.name} (${this.userData.classRoom || 'IX'})`;
+          const classStr = this.userData.classRoom ? ` (${this.userData.classRoom})` : "";
+          el.innerText = `${this.userData.name}${classStr}`;
         }
       }
     });
@@ -490,8 +499,6 @@ class App {
     if (progressBar) progressBar.style.width = isGuru ? "100%" : `${progressInLevel}%`;
 
     // --- KONTROL PEMBATASAN AKSES MENU KETIKA BELUM LOGIN ---
-    const loggedIn = this.isUserLoggedIn();
-
     // 1. Kunci / Buka Navigasi Tab Menu (Kecuali Beranda & Guru)
     const lockableNavItems = document.querySelectorAll('.nav-item[data-view]:not([data-view="beranda"]):not([data-view="guru"])');
     lockableNavItems.forEach(item => {
@@ -739,8 +746,8 @@ class App {
         <p>Topik: <strong>Zat Aditif & Zat Adiktif</strong></p>
 
         <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.85rem; margin:1rem 0;">
-          Peserta Ujian: <strong>${this.userData.name}</strong> | 
-          Kelas: <strong>${this.userData.classRoom || 'Kelas IX'}</strong>
+          Peserta Ujian: <strong>${this.userData.name}</strong>
+          ${this.userData.classRoom ? ` | Kelas: <strong>${this.userData.classRoom}</strong>` : ''}
           ${this.userData.absen ? ` | No. Absen: <strong>${this.userData.absen}</strong>` : ''}
         </div>
 
@@ -999,7 +1006,7 @@ class App {
     const reportItem = {
       date: dateStr,
       studentName: this.userData.name,
-      classRoom: this.userData.classRoom || "IX-A",
+      classRoom: this.userData.classRoom || "",
       absen: this.userData.absen || "-",
       total: totalQuestions,
       correct: correctCount,
@@ -1019,8 +1026,8 @@ class App {
         <div class="trophy-huge animate-bounce">🏆</div>
         <h2>HASIL EVALUASI PEMBELAJARAN</h2>
         <p class="qr-student">
-          Peserta: <strong>${this.userData.name}</strong> | 
-          Kelas: <strong>${this.userData.classRoom || 'IX'}</strong>
+          Peserta: <strong>${this.userData.name}</strong>
+          ${this.userData.classRoom ? ` | Kelas: <strong>${this.userData.classRoom}</strong>` : ''}
           ${this.userData.absen ? ` | Absen: <strong>${this.userData.absen}</strong>` : ''}
         </p>
 
@@ -1087,7 +1094,7 @@ class App {
 *Topik: Zat Aditif & Zat Adiktif*
 ----------------------------------------
 👤 *Nama Siswa:* ${latest.studentName || this.userData.name}
-🏫 *Kelas:* ${latest.classRoom || this.userData.classRoom || 'Kelas IX'}
+🏫 *Kelas:* ${latest.classRoom || this.userData.classRoom || '-'}
 🔢 *No. Absen:* ${latest.absen || this.userData.absen || '-'}
 📅 *Waktu Pengerjaan:* ${latest.date}
 
@@ -1132,7 +1139,7 @@ _Dikirim otomatis via Media Pembelajaran Interaktif IPA SMP/MTs Fase D_`;
             <span class="hdsc-icon">👤</span>
             <div>
               <small>Nama & Kelas</small>
-              <strong>${this.userData.name} (${this.userData.classRoom || 'IX'})</strong>
+              <strong>${this.userData.name}${this.userData.classRoom ? ` (${this.userData.classRoom})` : ''}</strong>
             </div>
           </div>
           <div class="hds-card">
@@ -1285,7 +1292,7 @@ _Dikirim otomatis via Media Pembelajaran Interaktif IPA SMP/MTs Fase D_`;
     this.userData = {
       role: "siswa",
       name: "Siswa SMP",
-      classRoom: "IX-A",
+      classRoom: "",
       absen: "",
       isLoggedIn: false,
       school: "SMP/MTs Fase D",
