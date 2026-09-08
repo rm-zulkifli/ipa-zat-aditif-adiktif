@@ -26,21 +26,21 @@
       </div>
 
       <div class="top-controls">
-        <!-- Aksesibilitas Font Size -->
-        <button class="btn-ctrl" id="btnFontDec" title="Perkecil Ukuran Teks (A-)">A-</button>
-        <button class="btn-ctrl" id="btnFontInc" title="Perbesar Ukuran Teks (A+)">A+</button>
+        <!-- Aksesibilitas Font Size (disembunyikan di HP kecil agar tombol login muat sempurna) -->
+        <button class="btn-ctrl ctrl-desktop-only" id="btnFontDec" title="Perkecil Ukuran Teks (A-)">A-</button>
+        <button class="btn-ctrl ctrl-desktop-only" id="btnFontInc" title="Perbesar Ukuran Teks (A+)">A+</button>
         <!-- Mode Kontras -->
-        <button class="btn-ctrl" id="btnToggleContrast" title="Mode Kontras Tinggi">👁️</button>
+        <button class="btn-ctrl ctrl-desktop-only" id="btnToggleContrast" title="Mode Kontras Tinggi">👁️</button>
         <!-- Audio Toggle -->
         <button class="btn-ctrl" id="btnToggleSound" title="Efek Suara ON/OFF">🔊</button>
         <!-- Fullscreen Toggle -->
-        <button class="btn-ctrl" id="btnFullscreen" title="Layar Penuh / Fullscreen">📺</button>
+        <button class="btn-ctrl ctrl-desktop-only" id="btnFullscreen" title="Layar Penuh / Fullscreen">📺</button>
 
-        <!-- User Profile Chip -->
-        <div class="user-profile-chip" onclick="window.app.promptChangeName()" title="Klik untuk mengubah nama peserta">
+        <!-- User Profile Chip (Selalu Tampil di HP untuk Login/Ganti Akun) -->
+        <div class="user-profile-chip" id="topProfileChip" onclick="window.app.openAuthModal()" title="Klik untuk Masuk atau Ganti Identitas Siswa/Guru">
           <div class="user-avatar-small">🎓</div>
           <div class="user-info-text">
-            <span class="user-name-display">Siswa SMP</span>
+            <span class="user-name-display">Masuk Siswa</span>
             <span class="user-xp-chip user-xp-display">0 XP</span>
           </div>
         </div>
@@ -92,6 +92,16 @@
 
       <!-- 1. VIEW: BERANDA -->
       <section id="view_beranda" class="view-section">
+        <!-- Quick Mobile Identity Banner -->
+        <div class="mobile-login-alert" onclick="window.app.openAuthModal()" title="Klik di sini untuk Memasukkan Nama & Kelas">
+          <span class="mla-icon">🎓</span>
+          <div class="mla-text">
+            <strong>Identitas Siswa: <span class="user-name-display">Masuk Siswa</span></strong>
+            <small>Sentuh di sini untuk Masukkan Nama & Kelas Siswa ➔</small>
+          </div>
+          <button class="btn btn-sm btn-primary">Masuk / Ganti</button>
+        </div>
+
         <!-- Hero Section -->
         <div class="hero-banner">
           <div class="hero-content">

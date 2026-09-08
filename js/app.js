@@ -348,7 +348,11 @@ class App {
       if (isGuru) {
         el.innerText = `${this.userData.name}`;
       } else {
-        el.innerText = `${this.userData.name} (${this.userData.classRoom || 'IX'})`;
+        if (!this.userData.isLoggedIn) {
+          el.innerText = "Masuk Siswa";
+        } else {
+          el.innerText = `${this.userData.name} (${this.userData.classRoom || 'IX'})`;
+        }
       }
     });
 
