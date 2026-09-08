@@ -106,6 +106,20 @@
           <button class="btn btn-sm btn-primary">Masuk / Ganti</button>
         </div>
 
+        <!-- Locked Alert Notice saat Siswa Belum Masuk -->
+        <div id="berandaLockedBanner" class="guest-locked-banner animate-fade-in hidden">
+          <div class="glb-icon">🔒</div>
+          <div class="glb-body">
+            <h3>Semua Menu Pembelajaran Masih Terkunci!</h3>
+            <p>Halo! Kamu belum memasukkan identitas. <strong>Siswa wajib masuk dengan Nama Lengkap & Kelas</strong> agar bisa membuka seluruh modul materi, laboratorium virtual, game edukasi, kuis, dan menyimpan hasil belajar.</p>
+          </div>
+          <div class="glb-actions">
+            <button class="btn btn-primary btn-lg" onclick="window.app.openAuthModal('siswa')">
+              🚀 Masuk Sekarang (Nama & Kelas)
+            </button>
+          </div>
+        </div>
+
         <!-- Hero Section -->
         <div class="hero-banner">
           <div class="hero-content">

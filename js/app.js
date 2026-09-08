@@ -73,13 +73,17 @@ class App {
     }
   }
 
+  isUserLoggedIn() {
+    return (this.userData.role === "guru" || (this.userData.isLoggedIn === true && this.userData.name && this.userData.name !== "Siswa SMP"));
+  }
+
   init() {
     this.updateUserUI();
     this.setupEventListeners();
     this.navigate("beranda");
 
     // Jika pengguna belum pernah mengisi identitas, buka modal gerbang masuk
-    if (!this.userData.isLoggedIn) {
+    if (!this.isUserLoggedIn()) {
       setTimeout(() => {
         this.openAuthModal("siswa");
       }, 350);
@@ -177,6 +181,9 @@ class App {
   closeAuthModal() {
     const modal = document.getElementById("authGatewayModal");
     if (modal) modal.classList.add("hidden");
+    if (!this.isUserLoggedIn()) {
+      this.showToast("ℹ️ Semua menu terkunci. Masuk dengan Nama & Kelas untuk membuka materi.");
+    }
   }
 
   switchAuthTab(tab) {
@@ -204,12 +211,18 @@ class App {
     const absenInput = document.getElementById("siswaAbsenInput");
 
     const name = nameInput ? nameInput.value.trim() : "";
-    const classRoom = (classInput && classInput.value.trim()) ? classInput.value.trim() : "Kelas IX";
+    const classRoom = (classInput && classInput.value.trim()) ? classInput.value.trim() : "";
     const absen = absenInput ? absenInput.value.trim() : "";
 
     if (!name) {
-      alert("Silakan masukkan nama lengkapmu terlebih dahulu!");
+      alert("Silakan masukkan Nama Lengkap terlebih dahulu!");
       if (nameInput) nameInput.focus();
+      return;
+    }
+
+    if (!classRoom) {
+      alert("Silakan masukkan Kelasmu (misal: IX-A atau 9B) terlebih dahulu!");
+      if (classInput) classInput.focus();
       return;
     }
 
@@ -228,7 +241,7 @@ class App {
     this.closeAuthModal();
 
     if (window.soundFX) window.soundFX.playCorrect();
-    this.showToast(`🎓 Selamat belajar, ${name} (${classRoom})!`);
+    this.showToast(`🎉 Akses menu terbuka! Selamat belajar, ${name} (${classRoom})!`);
   }
 
   submitGuruLogin() {
@@ -318,6 +331,14 @@ class App {
 
   // --- NAVIGATION ROUTER ---
   navigate(viewId, param = null) {
+    // Pembatasan Akses: Siswa wajib masuk terlebih dahulu untuk mengakses menu selain Beranda
+    if (!this.isUserLoggedIn() && viewId !== "beranda" && viewId !== "guru") {
+      if (window.soundFX) window.soundFX.playWrong();
+      this.showToast("🔒 Akses dibatasi! Siswa wajib masuk (Nama & Kelas) terlebih dahulu.");
+      this.openAuthModal("siswa");
+      return;
+    }
+
     if (window.soundFX) window.soundFX.playClick();
     this.currentView = viewId;
 
@@ -467,6 +488,55 @@ class App {
     const progressInLevel = this.userData.xp % 100;
     const progressBar = document.getElementById("homeLevelBar");
     if (progressBar) progressBar.style.width = isGuru ? "100%" : `${progressInLevel}%`;
+
+    // --- KONTROL PEMBATASAN AKSES MENU KETIKA BELUM LOGIN ---
+    const loggedIn = this.isUserLoggedIn();
+
+    // 1. Kunci / Buka Navigasi Tab Menu (Kecuali Beranda & Guru)
+    const lockableNavItems = document.querySelectorAll('.nav-item[data-view]:not([data-view="beranda"]):not([data-view="guru"])');
+    lockableNavItems.forEach(item => {
+      let lockBadge = item.querySelector(".nav-lock-badge");
+      if (!loggedIn) {
+        item.classList.add("nav-item-locked");
+        item.setAttribute("title", "🔒 Masuk dengan Nama & Kelas untuk membuka menu ini");
+        if (!lockBadge) {
+          lockBadge = document.createElement("span");
+          lockBadge.className = "nav-lock-badge";
+          lockBadge.innerText = " 🔒";
+          item.appendChild(lockBadge);
+        }
+      } else {
+        item.classList.remove("nav-item-locked");
+        item.removeAttribute("title");
+        if (lockBadge) lockBadge.remove();
+      }
+    });
+
+    // 2. Banner Peringatan di Beranda
+    const lockedBanner = document.getElementById("berandaLockedBanner");
+    if (lockedBanner) {
+      if (!loggedIn) {
+        lockedBanner.classList.remove("hidden");
+      } else {
+        lockedBanner.classList.add("hidden");
+      }
+    }
+
+    // 3. Label Terkunci pada Kartu Menu di Beranda
+    const featureCards = document.querySelectorAll(".feature-menu-card");
+    featureCards.forEach(card => {
+      let cardLock = card.querySelector(".card-lock-overlay");
+      if (!loggedIn) {
+        if (!cardLock) {
+          cardLock = document.createElement("div");
+          cardLock.className = "card-lock-overlay";
+          cardLock.innerHTML = `<span>🔒 Wajib Masuk</span>`;
+          card.appendChild(cardLock);
+        }
+      } else {
+        if (cardLock) cardLock.remove();
+      }
+    });
   }
 
   showToast(message) {
@@ -702,6 +772,13 @@ class App {
   }
 
   startQuiz() {
+    if (!this.isUserLoggedIn()) {
+      if (window.soundFX) window.soundFX.playWrong();
+      this.showToast("🔒 Silakan masukkan Nama & Kelas terlebih dahulu!");
+      this.openAuthModal("siswa");
+      return;
+    }
+
     const cfg = window.teacherMode ? window.teacherMode.config : { quizQuestionCount: 20, quizTimerSec: 30 };
     const pool = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
     const count = Math.min(pool.length, cfg.quizQuestionCount);
