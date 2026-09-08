@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mengenal Zat Aditif & Zat Adiktif | IPA SMP/MTs Kelas IX Fase D</title>
+  <meta name="description" content="Media Pembelajaran Interaktif (MPI) Digital IPA SMP/MTs Kelas IX Fase D — Zat Aditif dan Zat Adiktif. Modern, Responsif, Interaktif & IFP Ready." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- ==========================================
+         TOP BAR: BRAND & ACCESSIBILITY CONTROLS
+         ========================================== -->
+    <header class="top-navbar">
+      <div class="brand-section" onclick="window.app.navigate('beranda')" title="Klik untuk kembali ke Beranda">
+        <div class="brand-icon">🧪</div>
+        <div class="brand-meta">
+          <h1>
+            IPA KELAS IX
+            <span class="badge-fase">FASE D</span>
+          </h1>
+          <span class="brand-subtitle">Zat Aditif & Zat Adiktif</span>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <!-- Aksesibilitas Font Size -->
+        <button class="btn-ctrl" id="btnFontDec" title="Perkecil Ukuran Teks (A-)">A-</button>
+        <button class="btn-ctrl" id="btnFontInc" title="Perbesar Ukuran Teks (A+)">A+</button>
+        <!-- Mode Kontras -->
+        <button class="btn-ctrl" id="btnToggleContrast" title="Mode Kontras Tinggi">👁️</button>
+        <!-- Audio Toggle -->
+        <button class="btn-ctrl" id="btnToggleSound" title="Efek Suara ON/OFF">🔊</button>
+        <!-- Fullscreen Toggle -->
+        <button class="btn-ctrl" id="btnFullscreen" title="Layar Penuh / Fullscreen">📺</button>
+
+        <!-- User Profile Chip -->
+        <div class="user-profile-chip" onclick="window.app.promptChangeName()" title="Klik untuk mengubah nama peserta">
+          <div class="user-avatar-small">🎓</div>
+          <div class="user-info-text">
+            <span class="user-name-display">Siswa SMP</span>
+            <span class="user-xp-chip user-xp-display">0 XP</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         MAIN NAVIGATION (MENU UTAMA IFP TOUCH)
+         ========================================== -->
+    <nav class="main-nav-bar" aria-label="Menu Utama">
+      <div class="nav-tabs-wrapper">
+        <button class="nav-item active" data-view="beranda" onclick="window.app.navigate('beranda')">
+          <span>🏠</span> BERANDA
+        </button>
+        <button class="nav-item" data-view="materi" onclick="window.app.navigate('materi')">
+          <span>📚</span> MATERI
+        </button>
+        <button class="nav-item" data-view="lab" onclick="window.app.navigate('lab')">
+          <span>🧪</span> LABORATORIUM VIRTUAL
+        </button>
+        <button class="nav-item" data-view="games" onclick="window.app.navigate('games')">
+          <span>🎮</span> GAME EDUKASI
+        </button>
+        <button class="nav-item" data-view="kuis" onclick="window.app.navigate('kuis')">
+          <span>📝</span> KUIS
+        </button>
+        <button class="nav-item" data-view="battle" onclick="window.app.navigate('battle')">
+          <span>⚔️</span> TANDING 2 TIM
+        </button>
+        <button class="nav-item" data-view="hasil" onclick="window.app.navigate('hasil')">
+          <span>📊</span> HASIL BELAJAR
+        </button>
+        <button class="nav-item" data-view="pencapaian" onclick="window.app.navigate('pencapaian')">
+          <span>🏆</span> PENCAPAIAN
+        </button>
+        <button class="nav-item" data-view="petunjuk" onclick="window.app.navigate('petunjuk')">
+          <span>ℹ️</span> PETUNJUK
+        </button>
+        <button class="nav-item" data-view="guru" onclick="window.app.navigate('guru')" style="margin-left: auto;">
+          <span>👨‍🏫</span> MODE GURU
+        </button>
+      </div>
+    </nav>
+
+    <!-- ==========================================
+         MAIN VIEW CONTAINER (SPA ROUTER)
+         ========================================== -->
+    <main class="app-main-content">
+
+      <!-- 1. VIEW: BERANDA -->
+      <section id="view_beranda" class="view-section">
+        <!-- Hero Section -->
+        <div class="hero-banner">
+          <div class="hero-content">
+            <span class="hero-tag">🌟 IPA SMP/MTs — KELAS IX — FASE D</span>
+            <h2 class="hero-title">“Mengenal Zat Aditif & Zat Adiktif”</h2>
+            <p class="hero-subtitle">“Kenali, Pahami, Pilih dengan Bijak!”</p>
+            <p class="hero-desc">
+              Eksplorasi modul interaktif ilmu pengetahuan alam, lakukan simulasi uji kimia aman di laboratorium virtual, mainkan 5 game sains seru, dan uji ketangkasanmu dalam Science Battle di kelas!
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-lg btn-accent" onclick="window.app.navigate('materi')">
+                📚 Mulai Belajar Materi
+              </button>
+              <button class="btn btn-lg btn-outline" onclick="window.app.navigate('lab')">
+                🧪 Laboratorium Virtual
+              </button>
+              <button class="btn btn-lg btn-coral" onclick="window.app.navigate('battle')">
+                ⚔️ Science Battle (2 Tim)
+              </button>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <svg class="hero-badge-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="100" r="88" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="4" stroke-dasharray="6 6"/>
+              <path d="M75 140L100 55L125 140H75Z" fill="#38bdf8" fill-opacity="0.75"/>
+              <circle cx="100" cy="115" r="28" fill="#10b981"/>
+              <circle cx="100" cy="115" r="14" fill="#fef08a"/>
+              <text x="100" y="175" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">IPA FASE D</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Student Progress Widget -->
+        <div class="student-stat-strip">
+          <div class="user-greeting">
+            <h3>Halo, <span class="user-name-display" id="homeStudentName">Siswa Berprestasi</span>! 👋</h3>
+            <p class="text-muted">Lanjutkan petualangan belajarmu hari ini untuk membuka lebih banyak lencana!</p>
+          </div>
+
+          <div class="user-progress-bar-wrap">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+              <strong class="user-level-display">Level 1</strong>
+              <span class="user-xp-display">0 XP</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="homeLevelBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <span class="tag-tool">🏆 <strong class="user-badge-count">0</strong> Lencana Terkumpul</span>
+          </div>
+        </div>
+
+        <!-- 9 Grid Feature Cards -->
+        <h3 class="mt-4 mb-2">Pilih Jalur Pembelajaran:</h3>
+        <div class="dashboard-grid">
+          <!-- Card 1: Materi -->
+          <div class="feature-menu-card" style="--card-accent: #0284c7;" onclick="window.app.navigate('materi')">
+            <div class="fmc-header">
+              <span class="fmc-icon">📚</span>
+              <span class="fmc-badge">BAB 1 & 2</span>
+            </div>
+            <h4 class="fmc-title">Materi Pembelajaran</h4>
+            <p class="fmc-desc">Modul interaktif Zat Aditif Pangan & Zat Adiktif Tubuh lengkap dengan fakta unik dan rangkuman.</p>
+            <div class="fmc-footer">Buka Materi ➔</div>
+          </div>
+
+          <!-- Card 2: Lab Virtual -->
+          <div class="feature-menu-card" style="--card-accent: #10b981;" onclick="window.app.navigate('lab')">
+            <div class="fmc-header">
+              <span class="fmc-icon">🧪</span>
+              <span class="fmc-badge">3 Eksperimen</span>
+            </div>
+            <h4 class="fmc-title">Laboratorium Virtual</h4>
+            <p class="fmc-desc">Uji pewarna makanan pada benang wol, pengaruh pengawet roti 7 hari, dan uji boraks dengan kunyit.</p>
+            <div class="fmc-footer">Masuk Lab ➔</div>
+          </div>
+
+          <!-- Card 3: Game Edukasi -->
+          <div class="feature-menu-card" style="--card-accent: #f59e0b;" onclick="window.app.navigate('games')">
+            <div class="fmc-header">
+              <span class="fmc-icon">🎮</span>
+              <span class="fmc-badge">5 Game Sains</span>
+            </div>
+            <h4 class="fmc-title">Game Edukasi</h4>
+            <p class="fmc-desc">Sortir Zat, Tebak Zat (Clue Hunter), Pasangkan Kartu, Detektif Label, dan Misi Hidup Sehat.</p>
+            <div class="fmc-footer">Mainkan Game ➔</div>
+          </div>
+
+          <!-- Card 4: Kenali Zatnya -->
+          <div class="feature-menu-card" style="--card-accent: #8b5cf6;" onclick="window.app.navigate('kenali')">
+            <div class="fmc-header">
+              <span class="fmc-icon">⚡</span>
+              <span class="fmc-badge">Tantangan Kilat</span>
+            </div>
+            <h4 class="fmc-title">Kenali Zatnya</h4>
+            <p class="fmc-desc">Tebak cepat objek: Zat Aditif, Zat Adiktif, atau Bukan Keduanya secara tanggap dan akurat.</p>
+            <div class="fmc-footer">Uji Kecepatan ➔</div>
+          </div>
+
+          <!-- Card 5: Baca Label Makanan -->
+          <div class="feature-menu-card" style="--card-accent: #0ea5e9;" onclick="window.app.navigate('bacalabel')">
+            <div class="fmc-header">
+              <span class="fmc-icon">🔍</span>
+              <span class="fmc-badge">Simulasi Label</span>
+            </div>
+            <h4 class="fmc-title">Baca Label Makanan</h4>
+            <p class="fmc-desc">Periksa komposisi kemasan biskuit, minuman soda, dan saus sambal dengan kaca pembesar interaktif.</p>
+            <div class="fmc-footer">Periksa Label ➔</div>
+          </div>
+
+          <!-- Card 6: Studi Kasus Kritis -->
+          <div class="feature-menu-card" style="--card-accent: #f97316;" onclick="window.app.navigate('kasus')">
+            <div class="fmc-header">
+              <span class="fmc-icon">📖</span>
+              <span class="fmc-badge">Berpikir Kritis</span>
+            </div>
+            <h4 class="fmc-title">Studi Kasus Kritis</h4>
+            <p class="fmc-desc">Selesaikan dilema nyata: warna es sirup mencolok, tekanan sebaya merokok/vape, dan tahu kenyal.</p>
+            <div class="fmc-footer">Pecahkan Kasus ➔</div>
+          </div>
+
+          <!-- Card 7: Kuis Interaktif -->
+          <div class="feature-menu-card" style="--card-accent: #ec4899;" onclick="window.app.navigate('kuis')">
+            <div class="fmc-header">
+              <span class="fmc-icon">📝</span>
+              <span class="fmc-badge">50+ Bank Soal</span>
+            </div>
+            <h4 class="fmc-title">Kuis Interaktif</h4>
+            <p class="fmc-desc">Evaluasi pemahaman dengan soal acak HOTS, pembahasan lengkap, dan rekomendasi belajar.</p>
+            <div class="fmc-footer">Mulai Kuis ➔</div>
+          </div>
+
+          <!-- Card 8: Science Battle -->
+          <div class="feature-menu-card" style="--card-accent: #f43f5e;" onclick="window.app.navigate('battle')">
+            <div class="fmc-header">
+              <span class="fmc-icon">⚔️</span>
+              <span class="fmc-badge">Mode Tanding</span>
+            </div>
+            <h4 class="fmc-title">Science Battle (2 Tim)</h4>
+            <p class="fmc-desc">Cerdas cermat interaktif Tim A vs Tim B dengan timer, skor langsung, dan animasi kemenangan.</p>
+            <div class="fmc-footer">Masuk Arena ➔</div>
+          </div>
+
+          <!-- Card 9: Hasil Belajar & Lencana -->
+          <div class="feature-menu-card" style="--card-accent: #14b8a6;" onclick="window.app.navigate('hasil')">
+            <div class="fmc-header">
+              <span class="fmc-icon">📊</span>
+              <span class="fmc-badge">Rapor Digital</span>
+            </div>
+            <h4 class="fmc-title">Hasil Belajar & Lencana</h4>
+            <p class="fmc-desc">Pantau perkembangan nilai kuis, total XP, tingkatan level, dan koleksi 10 lencana prestasimu.</p>
+            <div class="fmc-footer">Lihat Rapor ➔</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. VIEW: MATERI PEMBELAJARAN -->
+      <section id="view_materi" class="view-section hidden">
+        <div class="materi-container">
+          <!-- Bab Switcher Header -->
+          <div class="materi-top-header">
+            <div>
+              <h3>📚 Modul Pembelajaran IPA Fase D</h3>
+              <p class="text-muted">Pilih bab untuk membaca sub-topik dan aktivitas interaktif.</p>
+            </div>
+            <div class="bab-switcher-pills">
+              <button class="btn-bab-switch active" id="btnMateriBab1" onclick="window.app.switchMateriBab('bab1')">
+                🥗 BAB 1: ZAT ADITIF (A-N)
+              </button>
+              <button class="btn-bab-switch" id="btnMateriBab2" onclick="window.app.switchMateriBab('bab2')">
+                🧠 BAB 2: ZAT ADIKTIF (A-P)
+              </button>
+            </div>
+          </div>
+
+          <!-- Layout Grid: Sidebar Navigation + Reader -->
+          <div class="materi-layout-grid">
+            <aside class="materi-sidebar">
+              <h4 class="materi-sidebar-title">Daftar Sub-Materi:</h4>
+              <div class="materi-sidebar-list" id="materiSidebarList">
+                <!-- Injected via JavaScript -->
+              </div>
+            </aside>
+
+            <article class="materi-reader-area" id="materiContentMount">
+              <!-- Injected via JavaScript -->
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. VIEW: LABORATORIUM VIRTUAL -->
+      <section id="view_lab" class="view-section hidden">
+        <div id="labMountContainer">
+          <!-- Injected via js/lab.js -->
+        </div>
+      </section>
+
+      <!-- 4. VIEW: GAME EDUKASI -->
+      <section id="view_games" class="view-section hidden">
+        <div class="game-subnav-bar">
+          <button class="game-subnav-btn active" data-game="game1" onclick="window.eduGames.switchGameTab('game1')">
+            📦 Game 1: Sortir Zat
+          </button>
+          <button class="game-subnav-btn" data-game="game2" onclick="window.eduGames.switchGameTab('game2')">
+            🕵️ Game 2: Tebak Zat
+          </button>
+          <button class="game-subnav-btn" data-game="game3" onclick="window.eduGames.switchGameTab('game3')">
+            🔗 Game 3: Pasangkan Kartu
+          </button>
+          <button class="game-subnav-btn" data-game="game4" onclick="window.eduGames.switchGameTab('game4')">
+            🔍 Game 4: Detektif Label
+          </button>
+          <button class="game-subnav-btn" data-game="game5" onclick="window.eduGames.switchGameTab('game5')">
+            🌱 Game 5: Misi Hidup Sehat
+          </button>
+        </div>
+
+        <div id="gameViewContainer">
+          <!-- Injected via js/games.js -->
+        </div>
+      </section>
+
+      <!-- 5. VIEW: KENALI ZATNYA (QUICK TRIAGE) -->
+      <section id="view_kenali" class="view-section hidden">
+        <div id="kenaliMountContainer">
+          <!-- Injected via js/games.js -->
+        </div>
+      </section>
+
+      <!-- 6. VIEW: BACA LABEL MAKANAN -->
+      <section id="view_bacalabel" class="view-section hidden">
+        <div id="bacaLabelMountContainer">
+          <!-- Injected via js/games.js -->
+        </div>
+      </section>
+
+      <!-- 7. VIEW: STUDI KASUS KRITIS -->
+      <section id="view_kasus" class="view-section hidden">
+        <div id="kasusMountContainer">
+          <!-- Injected via js/games.js -->
+        </div>
+      </section>
+
+      <!-- 8. VIEW: KUIS INTERAKTIF -->
+      <section id="view_kuis" class="view-section hidden">
+        <div id="kuisMountContainer">
+          <!-- Injected via js/app.js -->
+        </div>
+      </section>
+
+      <!-- 9. VIEW: SCIENCE BATTLE (2 TIM) -->
+      <section id="view_battle" class="view-section hidden">
+        <div id="battleMountContainer">
+          <!-- Injected via js/battle.js -->
+        </div>
+      </section>
+
+      <!-- 10. VIEW: HASIL BELAJAR (RAPOR SISWA) -->
+      <section id="view_hasil" class="view-section hidden">
+        <div id="hasilMountContainer">
+          <!-- Injected via js/app.js -->
+        </div>
+      </section>
+
+      <!-- 11. VIEW: PENCAPAIAN (BADGE GALLERY) -->
+      <section id="view_pencapaian" class="view-section hidden">
+        <div id="pencapaianMountContainer">
+          <!-- Injected via js/app.js -->
+        </div>
+      </section>
+
+      <!-- 12. VIEW: PETUNJUK & PANDUAN PENGGUNAAN -->
+      <section id="view_petunjuk" class="view-section hidden">
+        <div class="materi-reader-card animate-fade-in">
+          <h2>ℹ️ Petunjuk Penggunaan Media Pembelajaran Interaktif (MPI)</h2>
+          <p class="text-muted">Panduan pengoperasian pada komputer, laptop, tablet, smartphone, dan Interactive Flat Panel (IFP/Smartboard).</p>
+          <hr style="margin: 1rem 0;">
+
+          <h3>🎯 Tujuan Pembelajaran IPA Kelas IX Fase D</h3>
+          <p>Aplikasi ini dirancang untuk mendampingi peserta didik mencapai Capaian Pembelajaran (CP) Fase D:</p>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+            <li>Mengidentifikasi macam-macam zat aditif alami dan sintetis beserta fungsinya dalam makanan/minuman.</li>
+            <li>Menganalisis bahaya zat aditif terlarang (pewarna tekstil Rhodamin B, formalin, dan boraks).</li>
+            <li>Memahami karakteristik ketergantungan zat adiktif (toleransi tubuh, adiksi, dan sindrom putus zat).</li>
+            <li>Menjelaskan dampak nikotin, alkohol, narkotika, psikotropika, dan inhalan terhadap organ dan sistem saraf.</li>
+            <li>Mengembangkan keterampilan berpikir kritis, membaca label kemasan (CEK KLIK), dan komunikasi asertif menolak ajakan berbahaya.</li>
+          </ul>
+
+          <h3>🖥️ Panduan Penggunaan pada Layar Sentuh / IFP (Smartboard)</h3>
+          <div class="callout tip">
+            <strong>Tips Guru di Depan Kelas:</strong>
+            <ul style="margin-top: 0.5rem;">
+              <li><strong>Tombol Besar:</strong> Semua tombol dirancang dengan ukuran minimal 48px sehingga nyaman disentuh dengan jari atau stylus pen.</li>
+              <li><strong>Science Battle:</strong> Gunakan menu <strong>⚔️ TANDING 2 TIM</strong> untuk membagi kelas menjadi dua regu (Tim A dan Tim B) dalam sesi cerdas cermat kompetitif.</li>
+              <li><strong>Laboratorium Virtual:</strong> Siswa dapat dipanggil ke depan kelas untuk menyentuh reagen, memanaskan tabung reaksi, dan mengamati pembusukan roti secara interaktif.</li>
+              <li><strong>Mode Layar Penuh:</strong> Tekan tombol <strong>📺</strong> di sudut kanan atas untuk menyembunyikan bilah peramban browser saat presentasi.</li>
+            </ul>
+          </div>
+
+          <h3>🔤 Fitur Aksesibilitas</h3>
+          <p>Di sudut kanan atas bilah navigasi, tersedia alat bantu:</p>
+          <ul>
+            <li><strong>A- / A+:</strong> Mengatur perbesaran ukuran teks agar mudah dibaca dari baris belakang kelas.</li>
+            <li><strong>👁️:</strong> Mengaktifkan mode kontras tinggi bagi pengguna dengan kebutuhan khusus visual.</li>
+            <li><strong>🔊:</strong> Menyalakan atau mematikan efek suara instan.</li>
+            <li><strong>🎓 Profil:</strong> Sentuh nama di bilah atas untuk mengganti nama peserta didik.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 13. VIEW: MODE GURU -->
+      <section id="view_guru" class="view-section hidden">
+        <div id="teacherContainer">
+          <!-- Injected via js/teacher.js -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p><strong>Media Pembelajaran Interaktif (MPI) Digital IPA SMP/MTs — Kelas IX — Fase D</strong></p>
+        <p>Topik: “Zat Aditif dan Zat Adiktif” — Kenali, Pahami, Pilih dengan Bijak!</p>
+        <small>© Kurikulum Merdeka Fase D — Siap Digunakan Secara Mandiri & Offline</small>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==========================================
+       MODAL: GERBANG MASUK / PILIH PERAN (SISWA / GURU)
+       ========================================== -->
+  <div id="authGatewayModal" class="modal-overlay hidden">
+      <div class="modal-card animate-scale-in">
+        <div class="modal-header">
+          <div class="auth-role-tabs">
+            <button class="btn-role-tab active" id="tabRoleSiswa" onclick="window.app.switchAuthTab('siswa')">
+              🎓 Masuk Sebagai Siswa
+            </button>
+            <button class="btn-role-tab" id="tabRoleGuru" onclick="window.app.switchAuthTab('guru')">
+              👨‍🏫 Masuk Sebagai Guru / Admin
+            </button>
+          </div>
+          <button class="btn-modal-close" onclick="window.app.closeAuthModal()" title="Tutup Modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- FORM 1: SISWA (INPUT NAMA & KELAS SAJA) -->
+          <div id="formAuthSiswa" class="auth-form-view">
+            <div class="auth-intro">
+              <div class="ai-icon">🎓</div>
+              <h3>Selamat Datang, Siswa Cerdas!</h3>
+              <p>Masukkan nama lengkap dan kelasmu untuk mulai belajar, bermain, dan mencatat nilai kuis.</p>
+            </div>
+
+            <div class="form-group-login">
+              <label for="siswaNameInput"><strong>Nama Lengkap Siswa:</strong></label>
+              <input type="text" id="siswaNameInput" class="form-input" placeholder="Ketik nama lengkapmu..." required />
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group-login">
+                <label for="siswaClassInput"><strong>Kelas:</strong></label>
+                <input type="text" id="siswaClassInput" class="form-input" placeholder="Ketik kelas (misal: IX-A, 9B, IX-1)..." required />
+              </div>
+
+              <div class="form-group-login">
+                <label for="siswaAbsenInput"><strong>Nomor Absen (Opsional):</strong></label>
+                <input type="number" id="siswaAbsenInput" class="form-input" placeholder="Contoh: 14" min="1" max="50" />
+              </div>
+            </div>
+
+            <div class="btn-group-center mt-3">
+              <button class="btn btn-lg btn-primary" onclick="window.app.submitSiswaLogin()">
+                🚀 Mulai Belajar & Bermain
+              </button>
+            </div>
+          </div>
+
+          <!-- FORM 2: GURU / ADMIN (LOGIN DENGAN USER & PASSWORD) -->
+          <div id="formAuthGuru" class="auth-form-view hidden">
+            <div class="auth-intro">
+              <div class="ai-icon">👨‍🏫</div>
+              <h3>Masuk Portal Guru / Admin</h3>
+              <p>Akses khusus pengajar untuk mengatur kuis, analitik kelas, nomor WhatsApp laporan, dan mode IFP.</p>
+            </div>
+
+            <div class="form-group-login">
+              <label for="modalAdminUser"><strong>Username Admin:</strong></label>
+              <input type="text" id="modalAdminUser" class="form-input" value="admin" placeholder="admin / guru" />
+            </div>
+
+            <div class="form-group-login">
+              <label for="modalAdminPin"><strong>Kata Sandi / PIN Guru:</strong></label>
+              <input type="password" id="modalAdminPin" class="form-input" placeholder="Masukkan PIN admin..." />
+              <small class="text-muted">Default username: <code>admin</code> | PIN: <code>guru123</code></small>
+            </div>
+
+            <div id="modalAdminError" class="alert-danger hidden mt-2"></div>
+
+            <div class="btn-group-center mt-3">
+              <button class="btn btn-lg btn-accent" onclick="window.app.submitGuruLogin()">
+                🔑 Masuk Dashboard Guru
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRIPT LIBRARIES & MODULES -->
+  <script src="js/audio.js"></script>
+  <script src="js/data-materi.js"></script>
+  <script src="js/data-questions.js"></script>
+  <script src="js/data-cases.js"></script>
+  <script src="js/lab.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/teacher.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
