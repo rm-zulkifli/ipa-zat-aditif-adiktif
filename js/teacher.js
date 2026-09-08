@@ -16,7 +16,8 @@ class TeacherMode {
       teacherPhone: "6285208194646", // Nomor WA Guru untuk menerima laporan siswa
       teacherName: "RM.Zulkifli",
       adminUser: "admin",
-      adminPin: "l4zu4rd1"
+      adminPin: "l4zu4rd1",
+      googleSheetUrl: "" // Webhook Google Apps Script untuk pengumpulan nilai otomatis
     };
     this.loadConfig();
   }
@@ -243,6 +244,83 @@ class TeacherMode {
               <small class="text-muted">💡 Jika diisi, tombol <em>'📲 Kirim Hasil ke WhatsApp Guru'</em> di rapor siswa akan otomatis mengirim pesan langsung ke nomor ini.</small>
             </div>
 
+            <!-- Google Sheets Integration Section -->
+            <div class="mt-3" style="background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:1.1rem;">
+              <h4 style="color:#15803d; margin:0 0 0.35rem 0; display:flex; align-items:center; gap:0.4rem; font-size:1.05rem;">
+                📊 Integrasi Rekap Otomatis Google Sheets
+              </h4>
+              <p style="margin:0 0 0.75rem 0; font-size:0.85rem; color:#166534; line-height:1.5;">
+                Setiap kali siswa selesai kuis di HP mereka, nilai (Nama, Kelas, Absen, Skor, Predikat) akan <strong>otomatis langsung terkirim ke Google Spreadsheet Bapak</strong> secara real-time!
+              </p>
+
+              <div class="form-group-td">
+                <label><strong>URL Web App Google Apps Script:</strong></label>
+                <input type="text" id="cfgGoogleSheetUrl" class="form-input" value="${this.config.googleSheetUrl || ''}" onchange="window.teacherMode.updateConfig()" placeholder="https://script.google.com/macros/s/.../exec" />
+                <small class="text-muted">Tempelkan URL Web App dari Google Spreadsheet Bapak di sini.</small>
+              </div>
+
+              <div style="display:flex; gap:0.5rem; margin-top:0.65rem; flex-wrap:wrap;">
+                <button type="button" class="btn btn-sm btn-outline" onclick="window.teacherMode.toggleGSheetsGuide()">
+                  📖 Panduan & Salin Skrip (1 Menit Jadi)
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="window.teacherMode.testGoogleSheetsConnection()">
+                  🧪 Uji Coba Kirim Data ke Sheet
+                </button>
+              </div>
+
+              <div id="gsheetsTestFeedback" class="hidden mt-2" style="font-size:0.85rem;"></div>
+
+              <!-- Collapsible Guide & Code -->
+              <div id="gsheetsGuideBox" class="hidden mt-3" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:1rem; font-size:0.85rem;">
+                <h5 style="color:#0f172a; margin-top:0; margin-bottom:0.5rem; font-size:0.95rem;">📝 4 Langkah Mudah Menghubungkan Google Sheet:</h5>
+                <ol style="padding-left:1.2rem; margin-bottom:0.8rem; line-height:1.6; color:#334155;">
+                  <li>Buka <a href="https://sheets.new" target="_blank" style="color:#2563eb; text-decoration:underline; font-weight:600;">sheets.new</a> untuk membuat spreadsheet baru di akun Google Bapak. Beri judul spreadsheet tersebut.</li>
+                  <li>Di menu atas spreadsheet, klik menu <strong>Ekstensi (Extensions)</strong> &rarr; pilih <strong>Apps Script</strong>.</li>
+                  <li>Hapus seluruh kode bawaan yang ada di editor Apps Script, lalu <strong>salin dan tempelkan kode di bawah ini</strong>:</li>
+                </ol>
+
+                <div style="position:relative; margin-bottom:0.8rem;">
+                  <button type="button" class="btn btn-sm btn-accent" style="position:absolute; top:8px; right:8px; z-index:2;" onclick="window.teacherMode.copyGScriptCode()">
+                    📋 Salin Kode Skrip
+                  </button>
+                  <pre id="gsheetScriptCode" style="background:#0f172a; color:#f8fafc; padding:0.9rem; border-radius:6px; font-size:0.78rem; overflow-x:auto; margin:0; line-height:1.4;">function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Waktu", "Nama Siswa", "Kelas", "No. Absen", "Nilai", "Benar", "Total Soal", "Predikat", "Rekomendasi"]);
+      sheet.getRange("A1:I1").setFontWeight("bold").setBackground("#dcfce7");
+    }
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      data.date || new Date().toLocaleString("id-ID"),
+      data.studentName || "Anonim",
+      data.classRoom || "-",
+      data.absen || "-",
+      data.score,
+      data.correct,
+      data.total,
+      data.grade,
+      data.recommendation || "-"
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                </div>
+
+                <ol start="4" style="padding-left:1.2rem; margin-bottom:0; line-height:1.6; color:#334155;">
+                  <li>Klik tombol biru <strong>Terapkan (Deploy)</strong> di kanan atas &rarr; <strong>Penerapan baru (New deployment)</strong>.</li>
+                  <li>Pilih jenis roda gigi: <strong>Aplikasi Web (Web app)</strong>.</li>
+                  <li>Pada bagian <em>'Yang memiliki akses' (Who has access)</em>, pastikan memilih: <strong>Siapa saja (Anyone)</strong>.</li>
+                  <li>Klik <strong>Terapkan</strong>, berikan izin akses akun Google, lalu <strong>Salin URL Aplikasi Web</strong> (yang berakhiran <code>/exec</code>).</li>
+                  <li>Tempelkan link tersebut ke kolom URL di atas, lalu klik <strong>Uji Coba Kirim Data</strong>!</li>
+                </ol>
+              </div>
+            </div>
+
             <div class="form-group-td mt-2">
               <label>Jumlah Butir Soal Kuis Siswa:</label>
               <select id="cfgQuizCount" class="form-select" onchange="window.teacherMode.updateConfig()">
@@ -382,15 +460,17 @@ class TeacherMode {
     const diff = document.getElementById("cfgDifficulty");
     const phone = document.getElementById("cfgTeacherPhone");
     const tName = document.getElementById("cfgTeacherName");
+    const gSheetUrl = document.getElementById("cfgGoogleSheetUrl");
 
     if (qCount) this.config.quizQuestionCount = parseInt(qCount.value);
     if (timerSec) this.config.quizTimerSec = parseInt(timerSec.value);
     if (diff) this.config.difficulty = diff.value;
     if (phone) this.config.teacherPhone = phone.value.trim().replace(/[^0-9]/g, '');
+    if (gSheetUrl) this.config.googleSheetUrl = gSheetUrl.value.trim();
     if (tName) {
       this.config.teacherName = tName.value.trim();
       if (window.app && window.app.userData.role === "guru") {
-        window.app.userData.teacherName = this.config.teacherName || "Admin Guru";
+        window.app.userData.teacherName = this.config.teacherName || "RM.Zulkifli";
         window.app.saveState();
         window.app.updateUserUI();
       }
@@ -440,6 +520,75 @@ class TeacherMode {
     if (pinEl) pinEl.value = "";
     if (confirmEl) confirmEl.value = "";
     if (window.app) window.app.showToast("🔐 Kata sandi guru berhasil diubah!");
+  }
+
+  toggleGSheetsGuide() {
+    const box = document.getElementById("gsheetsGuideBox");
+    if (box) box.classList.toggle("hidden");
+  }
+
+  copyGScriptCode() {
+    const codeEl = document.getElementById("gsheetScriptCode");
+    if (codeEl) {
+      const text = codeEl.innerText.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        alert("📋 Skrip Google Apps Script berhasil disalin ke clipboard!");
+      }).catch(() => {
+        alert("Silakan salin teks skrip secara manual.");
+      });
+    }
+  }
+
+  async testGoogleSheetsConnection() {
+    const fb = document.getElementById("gsheetsTestFeedback");
+    const url = (this.config.googleSheetUrl || "").trim();
+    if (!url) {
+      if (fb) {
+        fb.className = "alert-danger mt-2 animate-fade-in";
+        fb.innerHTML = "❌ Silakan masukkan URL Web App Google Apps Script terlebih dahulu!";
+        fb.classList.remove("hidden");
+      }
+      return;
+    }
+
+    if (fb) {
+      fb.className = "alert-info mt-2 animate-fade-in";
+      fb.innerHTML = "⏳ Mengirim data uji coba ke Google Sheet...";
+      fb.classList.remove("hidden");
+    }
+
+    const testPayload = {
+      date: new Date().toLocaleString("id-ID"),
+      studentName: "Uji Coba Sistem (Pak RM.Zulkifli)",
+      classRoom: "9A",
+      absen: "01",
+      score: 100,
+      correct: 20,
+      total: 20,
+      grade: "Istimewa (A+)",
+      recommendation: "Koneksi Google Sheets berhasil tersambung secara otomatis!"
+    };
+
+    try {
+      await fetch(url, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(testPayload)
+      });
+
+      if (fb) {
+        fb.className = "alert-success mt-2 animate-fade-in";
+        fb.innerHTML = "✅ <strong>Permintaan berhasil dikirim!</strong><br>Silakan buka Google Sheet Bapak sekarang. Jika sudah muncul baris <em>'Uji Coba Sistem (Pak RM.Zulkifli)'</em>, berarti integrasi 100% SUKSES!";
+        fb.classList.remove("hidden");
+      }
+    } catch (err) {
+      if (fb) {
+        fb.className = "alert-danger mt-2 animate-fade-in";
+        fb.innerHTML = `❌ Gagal mengirim: ${err.message}. Pastikan URL diawali https://script.google.com/`;
+        fb.classList.remove("hidden");
+      }
+    }
   }
 
   confirmResetData() {

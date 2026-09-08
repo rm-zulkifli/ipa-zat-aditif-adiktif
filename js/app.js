@@ -1059,6 +1059,9 @@ class App {
 
     if (window.soundFX) window.soundFX.playVictory();
 
+    // Otomatis kirim data nilai kuis ke Google Sheets Guru jika URL sudah diisi
+    this.sendResultToGoogleSheets(reportItem);
+
     container.innerHTML = `
       <div class="quiz-result-card animate-scale-in ${gradeClass}">
         <div class="trophy-huge animate-bounce">🏆</div>
@@ -1098,6 +1101,9 @@ class App {
           <p>${recommendation}</p>
         </div>
 
+        <!-- Live status pengiriman Google Sheets -->
+        <div id="gSheetLiveStatus" class="mt-3" style="display:none; padding:0.8rem 1rem; border-radius:8px; font-size:0.9rem; text-align:center;"></div>
+
         <div class="btn-group-center mt-4">
           <button class="btn btn-wa-send btn-lg" onclick="window.app.sendResultsToWhatsApp()">
             📲 Kirim Nilai ke WhatsApp Guru
@@ -1108,6 +1114,72 @@ class App {
         </div>
       </div>
     `;
+  }
+
+  // --- GOOGLE SHEETS AUTOMATIC SUBMISSION ---
+  async sendResultToGoogleSheets(reportItem) {
+    let targetUrl = "";
+    if (window.teacherMode && window.teacherMode.config && window.teacherMode.config.googleSheetUrl) {
+      targetUrl = window.teacherMode.config.googleSheetUrl.trim();
+    } else {
+      try {
+        const savedCfg = localStorage.getItem("mpi_teacher_cfg");
+        if (savedCfg) {
+          const cfg = JSON.parse(savedCfg);
+          if (cfg.googleSheetUrl) targetUrl = cfg.googleSheetUrl.trim();
+        }
+      } catch (e) {}
+    }
+
+    const statusEl = document.getElementById("gSheetLiveStatus");
+    if (!targetUrl) {
+      return;
+    }
+
+    if (statusEl) {
+      statusEl.style.display = "block";
+      statusEl.style.background = "#e0f2fe";
+      statusEl.style.color = "#0369a1";
+      statusEl.style.border = "1px solid #7dd3fc";
+      statusEl.innerHTML = "⏳ <em>Sedang merekap nilai kuis otomatis ke Google Sheets Guru...</em>";
+    }
+
+    try {
+      await fetch(targetUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reportItem)
+      });
+
+      if (statusEl) {
+        statusEl.style.display = "block";
+        statusEl.style.background = "#f0fdf4";
+        statusEl.style.color = "#15803d";
+        statusEl.style.border = "1px solid #86efac";
+        statusEl.innerHTML = "✅ <strong>Nilai kuis Anda telah otomatis masuk ke Rekap Nilai Guru (Google Sheets)!</strong>";
+      }
+    } catch (err) {
+      console.warn("GSheets submission error:", err);
+      if (statusEl) {
+        statusEl.style.display = "block";
+        statusEl.style.background = "#fef2f2";
+        statusEl.style.color = "#b91c1c";
+        statusEl.style.border = "1px solid #fca5a5";
+        statusEl.innerHTML = "⚠️ Nilai kuis belum terkirim ke Google Sheets. Silakan gunakan tombol <strong>Kirim Nilai ke WhatsApp Guru</strong> di bawah.";
+      }
+    }
+  }
+
+  resendLatestToGoogleSheets() {
+    const history = this.userData.quizHistory || [];
+    if (history.length === 0) {
+      alert("Belum ada riwayat kuis untuk dikirim!");
+      return;
+    }
+    const latest = history[history.length - 1];
+    this.sendResultToGoogleSheets(latest);
+    this.showToast("📤 Mengirim nilai kuis terbaru ke Google Sheets...");
   }
 
   // --- WHATSAPP RESULT SUBMISSION ---
@@ -1261,6 +1333,9 @@ _Dikirim otomatis via Media Pembelajaran Interaktif IPA SMP/MTs Fase D_`;
           ${history.length > 0 ? `
             <button class="btn btn-wa-send btn-lg" onclick="window.app.sendResultsToWhatsApp()">
               📲 Kirim Nilai Terbaru ke WhatsApp Guru
+            </button>
+            <button class="btn btn-outline" onclick="window.app.resendLatestToGoogleSheets()">
+              📤 Kirim Ulang ke Google Sheets
             </button>
           ` : ''}
           <button class="btn btn-outline" onclick="window.print()">🖨️ Cetak / Simpan PDF Rapor</button>
