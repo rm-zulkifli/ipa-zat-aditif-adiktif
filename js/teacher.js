@@ -7,16 +7,16 @@ class TeacherMode {
   constructor() {
     this.isAuthenticated = false;
     this.defaultUser = "admin";
-    this.defaultPin = "guru123";
+    this.defaultPin = "l4zu4rd1";
     this.config = {
       quizQuestionCount: 20,
       quizTimerSec: 30,
       difficulty: "semua",
       allowReview: true,
-      teacherPhone: "", // Nomor WA Guru untuk menerima laporan siswa
-      teacherName: "Guru IPA SMP",
+      teacherPhone: "6285208194646", // Nomor WA Guru untuk menerima laporan siswa
+      teacherName: "RM.Zulkifli",
       adminUser: "admin",
-      adminPin: "guru123"
+      adminPin: "l4zu4rd1"
     };
     this.loadConfig();
   }
@@ -26,6 +26,15 @@ class TeacherMode {
       const saved = localStorage.getItem("mpi_teacher_cfg");
       if (saved) {
         this.config = { ...this.config, ...JSON.parse(saved) };
+        if (this.config.teacherName === "Guru IPA SMP" || !this.config.teacherName) {
+          this.config.teacherName = "RM.Zulkifli";
+        }
+        if (this.config.adminPin === "guru123") {
+          this.config.adminPin = "l4zu4rd1";
+        }
+        if (!this.config.teacherPhone) {
+          this.config.teacherPhone = "6285208194646";
+        }
       }
     } catch (e) {
       console.warn(e);
@@ -71,7 +80,7 @@ class TeacherMode {
         <div class="form-group-login">
           <label for="teacherPinInput">Kata Sandi / PIN Admin:</label>
           <input type="password" id="teacherPinInput" class="form-input" placeholder="Masukkan Kata Sandi..." autofocus />
-          <small class="text-muted">Gunakan Username & Sandi yang telah diatur (Default awal: <code>admin</code> / <code>guru123</code>)</small>
+          <small class="text-muted">Masukkan Username & Sandi Guru yang telah ditentukan</small>
         </div>
 
         <div class="btn-group-center">
@@ -104,7 +113,7 @@ class TeacherMode {
     const p = pinInput.value.trim();
 
     const expectedUser = (this.config.adminUser || "admin").trim().toLowerCase();
-    const expectedPin = (this.config.adminPin || "guru123").trim();
+    const expectedPin = (this.config.adminPin || "l4zu4rd1").trim();
 
     const validUser = (u === expectedUser);
     const validPin = (p === expectedPin);
@@ -154,13 +163,26 @@ class TeacherMode {
       highestScore = Math.max(...history.map(h => h.score));
     }
 
+    // Deteksi identitas siswa terakhir dari riwayat kuis atau data siswa (bukan nama akun guru)
+    let lastStudentDisplay = "Belum ada siswa";
+    if (history.length > 0) {
+      const lastQuiz = history[history.length - 1];
+      const qClass = lastQuiz.classRoom ? ` (${lastQuiz.classRoom})` : "";
+      lastStudentDisplay = `${lastQuiz.studentName || "Siswa"}${qClass}`;
+    } else if (window.app && window.app.userData && window.app.userData.studentName && window.app.userData.studentName !== "Siswa SMP" && window.app.userData.studentName !== "Guru IPA SMP") {
+      const cr = window.app.userData.studentClass ? ` (${window.app.userData.studentClass})` : (window.app.userData.classRoom ? ` (${window.app.userData.classRoom})` : "");
+      lastStudentDisplay = `${window.app.userData.studentName}${cr}`;
+    } else if (studentData.name && studentData.name !== "Siswa SMP" && studentData.name !== "Guru IPA SMP" && studentData.role !== "guru") {
+      lastStudentDisplay = `${studentData.name}${studentData.classRoom ? ` (${studentData.classRoom})` : ''}`;
+    }
+
     container.innerHTML = `
       <div class="teacher-dashboard-wrap">
         <!-- Top Toolbar -->
         <div class="td-header">
           <div>
             <div class="tag-tool" style="background:#e0f2fe; color:#0369a1; font-weight:700; margin-bottom:0.3rem;">
-              🛡️ AKUN ADMIN GURU AKTIF: ${this.config.teacherName}
+              🛡️ AKUN ADMIN GURU AKTIF: ${this.config.teacherName || "Admin Guru"}
             </div>
             <h2>👨‍🏫 Panel Kendali Pembelajaran IPA</h2>
             <p>Pengaturan Kuis, Integrasi Nilai WhatsApp, & Analitik Siswa</p>
@@ -177,7 +199,7 @@ class TeacherMode {
             <span class="ts-icon">👥</span>
             <div class="ts-info">
               <span class="ts-label">Siswa Terakhir</span>
-              <strong class="ts-val">${studentData.name}${studentData.classRoom ? ` (${studentData.classRoom})` : ''}</strong>
+              <strong class="ts-val">${lastStudentDisplay}</strong>
             </div>
           </div>
           <div class="tstat-card">
@@ -212,7 +234,7 @@ class TeacherMode {
 
             <div class="form-group-td mt-2">
               <label><strong>Nama Bapak/Ibu Guru:</strong></label>
-              <input type="text" id="cfgTeacherName" class="form-input" value="${this.config.teacherName}" onchange="window.teacherMode.updateConfig()" placeholder="Nama Guru..." />
+              <input type="text" id="cfgTeacherName" class="form-input" value="${(this.config.teacherName && this.config.teacherName !== 'Guru IPA SMP') ? this.config.teacherName : ''}" onchange="window.teacherMode.updateConfig()" placeholder="Ketik Nama Guru (contoh: Siti Nurhaliza, M.Pd.)..." />
             </div>
 
             <div class="form-group-td mt-2">
@@ -365,7 +387,14 @@ class TeacherMode {
     if (timerSec) this.config.quizTimerSec = parseInt(timerSec.value);
     if (diff) this.config.difficulty = diff.value;
     if (phone) this.config.teacherPhone = phone.value.trim().replace(/[^0-9]/g, '');
-    if (tName && tName.value.trim()) this.config.teacherName = tName.value.trim();
+    if (tName) {
+      this.config.teacherName = tName.value.trim();
+      if (window.app && window.app.userData.role === "guru") {
+        window.app.userData.teacherName = this.config.teacherName || "Admin Guru";
+        window.app.saveState();
+        window.app.updateUserUI();
+      }
+    }
 
     this.saveConfig();
     if (window.soundFX) window.soundFX.playClick();

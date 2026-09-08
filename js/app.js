@@ -10,7 +10,10 @@ class App {
     this.userData = {
       role: "siswa", // 'siswa' | 'guru'
       name: "Siswa SMP",
+      studentName: "",
       classRoom: "",
+      studentClass: "",
+      teacherName: "RM.Zulkifli",
       absen: "",
       isLoggedIn: false,
       school: "SMP/MTs Fase D",
@@ -62,6 +65,26 @@ class App {
         // Bersihkan default lama "IX-A" jika belum diisi manual oleh siswa
         if (this.userData.classRoom === "IX-A" && (!this.userData.isLoggedIn || this.userData.name === "Siswa SMP")) {
           this.userData.classRoom = "";
+          this.userData.studentClass = "";
+        }
+        // Bersihkan default dummy "Guru IPA SMP"
+        if (this.userData.name === "Guru IPA SMP") {
+          this.userData.name = "Siswa SMP";
+        }
+        if (this.userData.teacherName === "Guru IPA SMP" || !this.userData.teacherName || this.userData.teacherName === "Admin Guru") {
+          this.userData.teacherName = "RM.Zulkifli";
+        }
+        // Sinkronisasi nama akun guru dari konfigurasi guru yang tersimpan
+        if (this.userData.role === "guru") {
+          try {
+            const savedCfg = localStorage.getItem("mpi_teacher_cfg");
+            if (savedCfg) {
+              const cfgObj = JSON.parse(savedCfg);
+              if (cfgObj.teacherName && cfgObj.teacherName !== "Guru IPA SMP") {
+                this.userData.teacherName = cfgObj.teacherName;
+              }
+            }
+          } catch (e) {}
         }
       }
     } catch (e) {
@@ -173,7 +196,10 @@ class App {
         guruLoggedInBox.classList.remove("hidden");
         guruLoginForm.classList.add("hidden");
         if (guruLoggedName) {
-          guruLoggedName.innerText = this.userData.name || "Guru IPA SMP";
+          const tName = (window.teacherMode && window.teacherMode.config && window.teacherMode.config.teacherName && window.teacherMode.config.teacherName !== "Guru IPA SMP")
+            ? window.teacherMode.config.teacherName
+            : (this.userData.teacherName && this.userData.teacherName !== "Guru IPA SMP" ? this.userData.teacherName : "Admin Guru");
+          guruLoggedName.innerText = tName;
         }
       } else {
         guruLoggedInBox.classList.add("hidden");
@@ -232,7 +258,9 @@ class App {
 
     this.userData.role = "siswa";
     this.userData.name = name;
+    this.userData.studentName = name;
     this.userData.classRoom = classRoom;
+    this.userData.studentClass = classRoom;
     this.userData.absen = absen;
     this.userData.isLoggedIn = true;
 
@@ -259,16 +287,17 @@ class App {
     if (window.teacherMode) {
       window.teacherMode.loadConfig();
     }
-    const cfg = (window.teacherMode && window.teacherMode.config) ? window.teacherMode.config : { adminUser: "admin", adminPin: "guru123", teacherName: "Guru IPA SMP" };
+    const cfg = (window.teacherMode && window.teacherMode.config) ? window.teacherMode.config : { adminUser: "admin", adminPin: "l4zu4rd1", teacherName: "RM.Zulkifli" };
 
     const expectedUser = (cfg.adminUser || "admin").trim().toLowerCase();
-    const expectedPin = (cfg.adminPin || "guru123").trim();
+    const expectedPin = (cfg.adminPin || "l4zu4rd1").trim();
 
     const validUser = (u === expectedUser);
     const validPin = (p === expectedPin);
 
     if (validUser && validPin) {
-      this.setRoleAsGuru(cfg.teacherName || "Guru IPA SMP");
+      const activeTeacherName = (cfg.teacherName && cfg.teacherName !== "Guru IPA SMP") ? cfg.teacherName : "RM.Zulkifli";
+      this.setRoleAsGuru(activeTeacherName);
       this.closeAuthModal();
       if (userInput) userInput.value = cfg.adminUser || "admin";
       if (pinInput) pinInput.value = "";
@@ -284,9 +313,9 @@ class App {
     }
   }
 
-  setRoleAsGuru(teacherName = "Guru IPA SMP") {
+  setRoleAsGuru(teacherName = "RM.Zulkifli") {
     this.userData.role = "guru";
-    this.userData.name = teacherName;
+    this.userData.teacherName = (teacherName && teacherName !== "Guru IPA SMP") ? teacherName : "RM.Zulkifli";
     this.userData.isLoggedIn = true;
     if (window.teacherMode) {
       window.teacherMode.isAuthenticated = true;
@@ -461,13 +490,22 @@ class App {
     const nameEls = document.querySelectorAll(".user-name-display");
     nameEls.forEach(el => {
       if (isGuru) {
-        el.innerText = `${this.userData.name}`;
+        const tName = (window.teacherMode && window.teacherMode.config && window.teacherMode.config.teacherName && window.teacherMode.config.teacherName !== "Guru IPA SMP")
+          ? window.teacherMode.config.teacherName
+          : (this.userData.teacherName && this.userData.teacherName !== "Guru IPA SMP" ? this.userData.teacherName : "RM.Zulkifli");
+        el.innerText = tName;
       } else {
         if (!loggedIn) {
-          el.innerText = "Masuk Siswa";
+          if (el.id === "homeStudentName") {
+            el.innerText = "Siswa Berprestasi";
+          } else {
+            el.innerText = "Masuk Siswa";
+          }
         } else {
-          const classStr = this.userData.classRoom ? ` (${this.userData.classRoom})` : "";
-          el.innerText = `${this.userData.name}${classStr}`;
+          const sName = this.userData.studentName || this.userData.name || "Siswa SMP";
+          const sClass = this.userData.studentClass || this.userData.classRoom || "";
+          const classStr = sClass ? ` (${sClass})` : "";
+          el.innerText = `${sName}${classStr}`;
         }
       }
     });
@@ -1081,12 +1119,16 @@ class App {
     }
 
     const latest = history[history.length - 1];
-    let teacherPhone = (window.teacherMode && window.teacherMode.config.teacherPhone) ? window.teacherMode.config.teacherPhone : "";
+    let teacherPhone = (window.teacherMode && window.teacherMode.config && window.teacherMode.config.teacherPhone) ? window.teacherMode.config.teacherPhone : "6285208194646";
 
     if (!teacherPhone) {
       const askPhone = prompt("Masukkan nomor WhatsApp Bapak/Ibu Guru (contoh: 6281234567890):");
       if (!askPhone || !askPhone.trim()) return;
       teacherPhone = askPhone.trim().replace(/[^0-9]/g, '');
+    }
+
+    if (teacherPhone.startsWith("0")) {
+      teacherPhone = "62" + teacherPhone.slice(1);
     }
 
     // Format WhatsApp message text
