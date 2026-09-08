@@ -65,13 +65,13 @@ class TeacherMode {
 
         <div class="form-group-login">
           <label for="adminUsernameInput">Username Guru / Admin:</label>
-          <input type="text" id="adminUsernameInput" class="form-input" value="admin" placeholder="Username..." />
+          <input type="text" id="adminUsernameInput" class="form-input" value="${this.config.adminUser || 'admin'}" placeholder="Username..." />
         </div>
 
         <div class="form-group-login">
           <label for="teacherPinInput">Kata Sandi / PIN Admin:</label>
           <input type="password" id="teacherPinInput" class="form-input" placeholder="Masukkan Kata Sandi..." autofocus />
-          <small class="text-muted">Username default: <code>admin</code> | Password: <code>guru123</code></small>
+          <small class="text-muted">Gunakan Username & Sandi yang telah diatur (Default awal: <code>admin</code> / <code>guru123</code>)</small>
         </div>
 
         <div class="btn-group-center">
@@ -103,8 +103,11 @@ class TeacherMode {
     const u = userInput ? userInput.value.trim().toLowerCase() : "";
     const p = pinInput.value.trim();
 
-    const validUser = (u === this.config.adminUser.toLowerCase() || u === "guru" || u === "admin");
-    const validPin = (p === this.config.adminPin || p === "guru123" || p === "123456");
+    const expectedUser = (this.config.adminUser || "admin").trim().toLowerCase();
+    const expectedPin = (this.config.adminPin || "guru123").trim();
+
+    const validUser = (u === expectedUser);
+    const validPin = (p === expectedPin);
 
     if (validUser && validPin) {
       this.isAuthenticated = true;
@@ -116,7 +119,7 @@ class TeacherMode {
     } else {
       if (window.soundFX) window.soundFX.playWrong();
       if (err) {
-        err.innerText = "❌ Username atau Kata Sandi salah! (Default: admin / guru123)";
+        err.innerText = "❌ Username atau Kata Sandi Admin salah!";
         err.classList.remove("hidden");
       }
     }

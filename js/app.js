@@ -147,6 +147,14 @@ class App {
       absenInput.value = this.userData.absen;
     }
 
+    const adminUserInput = document.getElementById("modalAdminUser");
+    if (adminUserInput && window.teacherMode) {
+      window.teacherMode.loadConfig();
+      if (window.teacherMode.config.adminUser) {
+        adminUserInput.value = window.teacherMode.config.adminUser;
+      }
+    }
+
     // Tampilan dinamis tab Guru bila sudah login
     const isGuru = (this.userData.role === "guru");
     const guruLoggedInBox = document.getElementById("authGuruLoggedInBox");
@@ -231,10 +239,16 @@ class App {
     const u = userInput ? userInput.value.trim().toLowerCase() : "";
     const p = pinInput ? pinInput.value.trim() : "";
 
+    if (window.teacherMode) {
+      window.teacherMode.loadConfig();
+    }
     const cfg = (window.teacherMode && window.teacherMode.config) ? window.teacherMode.config : { adminUser: "admin", adminPin: "guru123", teacherName: "Guru IPA SMP" };
 
-    const validUser = (u === cfg.adminUser.toLowerCase() || u === "admin" || u === "guru");
-    const validPin = (p === cfg.adminPin || p === "guru123" || p === "123456");
+    const expectedUser = (cfg.adminUser || "admin").trim().toLowerCase();
+    const expectedPin = (cfg.adminPin || "guru123").trim();
+
+    const validUser = (u === expectedUser);
+    const validPin = (p === expectedPin);
 
     if (validUser && validPin) {
       this.setRoleAsGuru(cfg.teacherName || "Guru IPA SMP");
