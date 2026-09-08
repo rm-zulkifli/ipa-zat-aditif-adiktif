@@ -44,9 +44,9 @@ class TeacherMode {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Jika saat ini peran aktif di app adalah guru, langsung buka dashboard
-    if (window.app && window.app.userData.role === "guru") {
-      this.isAuthenticated = true;
+    // Sinkronisasi status autentikasi dengan role aktif aplikasi
+    if (window.app) {
+      this.isAuthenticated = (window.app.userData.role === "guru");
     }
 
     if (!this.isAuthenticated) {
@@ -123,11 +123,11 @@ class TeacherMode {
   }
 
   logout(containerId) {
-    this.isAuthenticated = false;
     if (window.app) {
-      window.app.openAuthModal();
+      window.app.logoutAdmin(true);
     } else {
-      this.init(containerId);
+      this.isAuthenticated = false;
+      this.init(containerId || "teacherContainer");
     }
   }
 

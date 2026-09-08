@@ -137,14 +137,32 @@ class App {
     const classInput = document.getElementById("siswaClassInput");
     const absenInput = document.getElementById("siswaAbsenInput");
 
-    if (nameInput && this.userData.name && this.userData.name !== "Siswa SMP") {
+    if (nameInput && this.userData.name && this.userData.name !== "Siswa SMP" && this.userData.role === "siswa") {
       nameInput.value = this.userData.name;
     }
-    if (classInput && this.userData.classRoom) {
+    if (classInput && this.userData.classRoom && this.userData.role === "siswa") {
       classInput.value = this.userData.classRoom;
     }
-    if (absenInput && this.userData.absen) {
+    if (absenInput && this.userData.absen && this.userData.role === "siswa") {
       absenInput.value = this.userData.absen;
+    }
+
+    // Tampilan dinamis tab Guru bila sudah login
+    const isGuru = (this.userData.role === "guru");
+    const guruLoggedInBox = document.getElementById("authGuruLoggedInBox");
+    const guruLoginForm = document.getElementById("authGuruLoginForm");
+    const guruLoggedName = document.getElementById("authGuruLoggedName");
+    if (guruLoggedInBox && guruLoginForm) {
+      if (isGuru) {
+        guruLoggedInBox.classList.remove("hidden");
+        guruLoginForm.classList.add("hidden");
+        if (guruLoggedName) {
+          guruLoggedName.innerText = this.userData.name || "Guru IPA SMP";
+        }
+      } else {
+        guruLoggedInBox.classList.add("hidden");
+        guruLoginForm.classList.remove("hidden");
+      }
     }
   }
 
@@ -193,6 +211,10 @@ class App {
     this.userData.absen = absen;
     this.userData.isLoggedIn = true;
 
+    if (window.teacherMode) {
+      window.teacherMode.isAuthenticated = false;
+    }
+
     this.saveState();
     this.updateUserUI();
     this.closeAuthModal();
@@ -217,6 +239,9 @@ class App {
     if (validUser && validPin) {
       this.setRoleAsGuru(cfg.teacherName || "Guru IPA SMP");
       this.closeAuthModal();
+      if (userInput) userInput.value = cfg.adminUser || "admin";
+      if (pinInput) pinInput.value = "";
+      if (errBox) errBox.classList.add("hidden");
       if (window.soundFX) window.soundFX.playCorrect();
       this.navigate("guru");
     } else {
@@ -238,6 +263,39 @@ class App {
     this.saveState();
     this.updateUserUI();
     this.showToast("👨‍🏫 Berhasil masuk sebagai Guru / Admin!");
+  }
+
+  logoutAdmin(askConfirm = true) {
+    if (askConfirm) {
+      const ok = confirm("Apakah Anda yakin ingin keluar dari akun Guru / Admin?");
+      if (!ok) return;
+    }
+
+    this.userData.role = "siswa";
+    this.userData.name = "Siswa SMP";
+    this.userData.classRoom = "IX-A";
+    this.userData.absen = "";
+    this.userData.isLoggedIn = false;
+
+    if (window.teacherMode) {
+      window.teacherMode.isAuthenticated = false;
+    }
+
+    this.saveState();
+    this.updateUserUI();
+    this.closeAuthModal();
+
+    if (window.soundFX) window.soundFX.playClick();
+    this.showToast("🔒 Berhasil keluar dari akun Guru / Admin.");
+
+    // Jika sedang di halaman guru, reset tampilan ke layar login Guru
+    if (this.currentView === "guru") {
+      if (window.teacherMode) {
+        window.teacherMode.init("teacherContainer");
+      }
+    } else {
+      this.renderBeranda();
+    }
   }
 
   promptChangeName() {
@@ -342,6 +400,20 @@ class App {
 
   updateUserUI() {
     const isGuru = (this.userData.role === "guru");
+
+    const avatarEl = document.getElementById("userAvatarSmall");
+    if (avatarEl) {
+      avatarEl.innerText = isGuru ? "👨‍🏫" : "🎓";
+    }
+
+    const btnLogoutHeader = document.getElementById("btnHeaderLogoutAdmin");
+    if (btnLogoutHeader) {
+      if (isGuru) {
+        btnLogoutHeader.classList.remove("hidden");
+      } else {
+        btnLogoutHeader.classList.add("hidden");
+      }
+    }
 
     const nameEls = document.querySelectorAll(".user-name-display");
     nameEls.forEach(el => {

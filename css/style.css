@@ -209,6 +209,32 @@ a {
   box-shadow: var(--shadow-sm);
 }
 
+.btn-logout-chip {
+  min-height: 38px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #f87171;
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-logout-chip:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 .user-avatar-small {
   width: 34px;
   height: 34px;
@@ -2967,6 +2993,12 @@ a {
 
   .user-xp-chip {
     font-size: 0.7rem;
+  }
+
+  .btn-logout-chip {
+    min-height: 32px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.74rem;
   }
 
   /* Modal Responsif di Layar HP */

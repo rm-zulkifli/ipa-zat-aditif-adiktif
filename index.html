@@ -38,12 +38,16 @@
 
         <!-- User Profile Chip (Selalu Tampil di HP untuk Login/Ganti Akun) -->
         <div class="user-profile-chip" id="topProfileChip" onclick="window.app.openAuthModal()" title="Klik untuk Masuk atau Ganti Identitas Siswa/Guru">
-          <div class="user-avatar-small">🎓</div>
+          <div class="user-avatar-small" id="userAvatarSmall">🎓</div>
           <div class="user-info-text">
             <span class="user-name-display">Masuk Siswa</span>
             <span class="user-xp-chip user-xp-display">0 XP</span>
           </div>
         </div>
+        <!-- Tombol Logout Khusus Guru/Admin -->
+        <button id="btnHeaderLogoutAdmin" class="btn-logout-chip hidden" onclick="window.app.logoutAdmin()" title="Keluar dari Akun Guru / Admin">
+          🔒 Keluar
+        </button>
       </div>
     </header>
 
@@ -490,27 +494,47 @@
           <div id="formAuthGuru" class="auth-form-view hidden">
             <div class="auth-intro">
               <div class="ai-icon">👨‍🏫</div>
-              <h3>Masuk Portal Guru / Admin</h3>
+              <h3>Portal Guru / Admin</h3>
               <p>Akses khusus pengajar untuk mengatur kuis, analitik kelas, nomor WhatsApp laporan, dan mode IFP.</p>
             </div>
 
-            <div class="form-group-login">
-              <label for="modalAdminUser"><strong>Username Admin:</strong></label>
-              <input type="text" id="modalAdminUser" class="form-input" value="admin" placeholder="admin / guru" />
+            <!-- Jika sudah login sebagai guru, tampilkan kotak status & tombol logout -->
+            <div id="authGuruLoggedInBox" class="hidden mb-3" style="background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:1.25rem; text-align:center;">
+              <div style="font-size:2rem; margin-bottom:0.35rem;">🛡️</div>
+              <h4 style="margin:0 0 0.35rem 0; color:#166534; font-size:1.1rem;">Akun Admin Guru Sedang Aktif</h4>
+              <p style="margin:0 0 1rem 0; font-size:0.95rem; color:#15803d; font-weight:600;" id="authGuruLoggedName">
+                Guru IPA SMP
+              </p>
+              <div style="display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="window.app.closeAuthModal(); window.app.navigate('guru');">
+                  ⚙️ Buka Panel Guru
+                </button>
+                <button class="btn btn-danger" onclick="window.app.logoutAdmin()">
+                  🔒 Keluar dari Akun Guru
+                </button>
+              </div>
             </div>
 
-            <div class="form-group-login">
-              <label for="modalAdminPin"><strong>Kata Sandi / PIN Guru:</strong></label>
-              <input type="password" id="modalAdminPin" class="form-input" placeholder="Masukkan PIN admin..." />
-              <small class="text-muted">Default username: <code>admin</code> | PIN: <code>guru123</code></small>
-            </div>
+            <!-- Form login jika belum login -->
+            <div id="authGuruLoginForm">
+              <div class="form-group-login">
+                <label for="modalAdminUser"><strong>Username Admin:</strong></label>
+                <input type="text" id="modalAdminUser" class="form-input" value="admin" placeholder="admin / guru" />
+              </div>
 
-            <div id="modalAdminError" class="alert-danger hidden mt-2"></div>
+              <div class="form-group-login">
+                <label for="modalAdminPin"><strong>Kata Sandi / PIN Guru:</strong></label>
+                <input type="password" id="modalAdminPin" class="form-input" placeholder="Masukkan PIN admin..." />
+                <small class="text-muted">Default username: <code>admin</code> | PIN: <code>guru123</code></small>
+              </div>
 
-            <div class="btn-group-center mt-3">
-              <button class="btn btn-lg btn-accent" onclick="window.app.submitGuruLogin()">
-                🔑 Masuk Dashboard Guru
-              </button>
+              <div id="modalAdminError" class="alert-danger hidden mt-2"></div>
+
+              <div class="btn-group-center mt-3">
+                <button class="btn btn-lg btn-accent" onclick="window.app.submitGuruLogin()">
+                  🔑 Masuk Dashboard Guru
+                </button>
+              </div>
             </div>
           </div>
         </div>
